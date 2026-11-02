@@ -1,0 +1,144 @@
+/**
+ * Colour tokens — the single source for every colour in the shared UI.
+ *
+ * Values come from the travel portal (travel_Portal_v4, portal-tokens.scss) so
+ * both products look the same. Light is the default; dark applies when the
+ * root element carries `data-theme="dark"`, the same switch the portal uses:
+ *
+ *   document.documentElement.dataset['theme'] = 'dark';
+ *
+ * Components read only these `--ui-*` names, never a hex value.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Brand — TRIO companion artwork, identical in both themes. */
+  --ui-brand-coral: #f1585f;
+  --ui-brand-teal: #31bcb3;
+  --ui-brand-cream: #f8f5ec;
+  --ui-brand-graphite: #25323a;
+
+  /* Page and surfaces */
+  --ui-bg: #eef3fb;
+  --ui-surface: #ffffff;
+  --ui-surface-soft: #f7faff;
+
+  /* Text */
+  --ui-text: #0b1324;
+  --ui-text-muted: #4b5a75;
+  --ui-label: #475569;
+
+  /* Borders and shadows */
+  --ui-border: rgba(20, 34, 67, 0.12);
+  --ui-border-strong: rgba(20, 34, 67, 0.2);
+  --ui-shadow: 0 12px 34px rgba(17, 30, 62, 0.11);
+  --ui-shadow-soft: 0 4px 18px rgba(17, 30, 62, 0.08);
+
+  /* Primary action */
+  --ui-primary: #2563eb;
+  --ui-primary-hover: #1d4ed8;
+  --ui-primary-soft: rgba(37, 99, 235, 0.12);
+  --ui-on-primary: #ffffff;
+  --ui-focus-ring: rgba(37, 99, 235, 0.22);
+
+  /* Secondary (neutral) action */
+  --ui-secondary: #f1f5f9;
+  --ui-secondary-hover: #e2e8f0;
+
+  /* Status — solid fills carry white text, so all clear AA 4.5:1. */
+  --ui-success: #047857;
+  --ui-success-hover: #065f46;
+  --ui-warning: #d97706;
+  --ui-warning-hover: #b45309;
+  --ui-danger: #dc2626;
+  --ui-danger-hover: #b91c1c;
+  --ui-info: #0369a1;
+
+  /* Soft tints for badges and highlighted rows; derived, so dark follows. */
+  --ui-success-soft: color-mix(in srgb, var(--ui-success) 14%, transparent);
+  --ui-warning-soft: color-mix(in srgb, var(--ui-warning) 16%, transparent);
+  --ui-danger-soft: color-mix(in srgb, var(--ui-danger) 14%, transparent);
+  --ui-info-soft: color-mix(in srgb, var(--ui-info) 14%, transparent);
+
+  /* Form controls */
+  --ui-control-bg: #f8fafc;
+  --ui-control-border: #cbd5e1;
+  --ui-control-border-hover: #94a3b8;
+  --ui-control-text: #0f172a;
+  --ui-control-placeholder: #64748b;
+  --ui-control-disabled-bg: #f1f5f9;
+  --ui-control-disabled-text: #475569;
+  --ui-control-valid: #16a34a;
+  --ui-control-invalid: #ef4444;
+  --ui-control-invalid-ring: rgba(239, 68, 68, 0.16);
+
+  /* Tables */
+  --ui-table-head-bg: #f8fafc;
+  --ui-table-head-text: #64748b;
+  --ui-table-row-bg: #ffffff;
+  --ui-table-row-alt-bg: #f1f5fb;
+  --ui-table-row-hover-bg: #e4edff;
+  --ui-table-row-selected-bg: #d2e1ff;
+  --ui-table-row-border: rgba(15, 23, 42, 0.08);
+
+  /* Tooltip — a dark bubble in both themes, for contrast on any surface. */
+  --ui-tooltip-bg: #1f2937;
+  --ui-tooltip-text: #f9fafb;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Page and surfaces — graphite, not navy */
+  --ui-bg: #09090b;
+  --ui-surface: #18181b;
+  --ui-surface-soft: #27272a;
+
+  /* Text */
+  --ui-text: #fafafa;
+  --ui-text-muted: #a1a1aa;
+  --ui-label: #d4d4d8;
+
+  /* Borders and shadows */
+  --ui-border: rgba(255, 255, 255, 0.08);
+  --ui-border-strong: rgba(255, 255, 255, 0.12);
+  --ui-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+  --ui-shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.42);
+
+  /* Primary action — violet accent */
+  --ui-primary: #7c3aed;
+  --ui-primary-hover: #6d28d9;
+  --ui-primary-soft: rgba(139, 92, 246, 0.16);
+  --ui-focus-ring: rgba(167, 139, 250, 0.28);
+
+  /* Secondary (neutral) action */
+  --ui-secondary: #3f3f46;
+  --ui-secondary-hover: #52525b;
+
+  /* Status — kept dark enough that white labels still clear AA 4.5:1. */
+  --ui-warning: #b45309;
+  --ui-warning-hover: #92400e;
+  --ui-info: #0284c7;
+
+  /* Form controls */
+  --ui-control-bg: #27272a;
+  --ui-control-border: #3f3f46;
+  --ui-control-border-hover: #52525b;
+  --ui-control-text: #fafafa;
+  --ui-control-placeholder: #a1a1aa;
+  --ui-control-disabled-bg: #1f1f23;
+  --ui-control-disabled-text: #a1a1aa;
+  --ui-control-valid: #34d399;
+  --ui-control-invalid: #f87171;
+  --ui-control-invalid-ring: rgba(248, 113, 113, 0.24);
+
+  /* Tables */
+  --ui-table-head-bg: #27272a;
+  --ui-table-head-text: #a1a1aa;
+  --ui-table-row-bg: #18181b;
+  --ui-table-row-alt-bg: #1c1c1f;
+  --ui-table-row-hover-bg: #1f1f23;
+  --ui-table-row-selected-bg: rgba(139, 92, 246, 0.14);
+  --ui-table-row-border: rgba(255, 255, 255, 0.06);
+}

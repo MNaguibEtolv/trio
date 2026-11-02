@@ -1,0 +1,246 @@
+<div
+  #container
+  class="ui-table__container"
+  [style.max-height]="maxHeight()"
+  [style.min-height]="minHeight()"
+  (scroll)="onScroll($event)"
+>
+  <table class="ui-table" [id]="tableId()">
+    <thead>
+      @for (headerRow of headerRowList(); track headerRow) {
+        <tr>
+          @for (column of columns(); track $index; let col = $index) {
+            @if (showHeaderCell(column, headerRow)) {
+              @let group = column.spainRow?.[headerRow];
+              <th
+                [style]="group?.style || column.Headstyle || ''"
+                [attr.rowspan]="headerRowspan(column)"
+                [attr.colspan]="group?.colspan ?? 1"
+                [attr.aria-sort]="
+                  isSortedBy(column, headerRow) ? (sort()!.type === 'asc' ? 'ascending' : 'descending') : null
+                "
+                [draggable]="canDrag(column)"
+                [class.ui-table__cell--check]="column.HeaderCheck && !group"
+                [class.ui-table__cell--actions]="column.field === '__portalRowActions'"
+                [class.ui-table__th--sortable]="!!sort() && !group && column.field !== '__portalRowActions'"
+                [class.ui-table__th--sorted]="isSortedBy(column, headerRow)"
+                (dragstart)="onDragStart(col)"
+                (dragover)="$event.preventDefault()"
+                (drop)="onDrop($event, col)"
+              >
+                <div class="ui-table__th">
+                  @if (column.HeaderCheck && !group) {
+                    @let state = columnState(col);
+                    <input
+                      type="checkbox"
+                      class="ui-table__check"
+                      aria-label="Select all"
+                      [checked]="state === 'all'"
+                      [indeterminate]="state === 'some'"
+                      [disabled]="tableRows().length === 0"
+                      (click)="$event.stopPropagation()"
+                      (change)="toggleColumn($event, col)"
+                    />
+                  }
+                  <span class="ui-table__th-label" (click)="sortBy(column, headerRow)">
+                    @if (group?.html) {
+                      <span [innerHTML]="group!.html | uiSafeHtml"></span>
+                    } @else {
+                      {{ (group ? group.Data : column.headerName) | uiTranslate }}
+                    }
+                    @if (isSortedBy(column, headerRow)) {
+                      <span class="ui-table__sort" aria-hidden="true">
+                        {{ sort()!.type === 'asc' ? '▲' : '▼' }}
+                      </span>
+                    }
+                  </span>
+                </div>
+                @if (column.SearchBy && !group) {
+                  <small class="ui-table__hint">({{ column.SearchBy | uiTranslate }})</small>
+                }
+              </th>
+            }
+          }
+        </tr>
+      }
+    </thead>
+
+    <tbody>
+      @if (view().top) {
+        <tr class="ui-table__spacer" aria-hidden="true">
+          <td [attr.colspan]="columns().length" [style.height.px]="view().top"></td>
+        </tr>
+      }
+
+      @for (row of view().rows; track row; let i = $index) {
+        @let index = view().start + i;
+        <tr
+          class="ui-table__row"
+          [attr.id]="row.id !== undefined ? 'Row-' + row.id : null"
+          [class]="row.RowClass ?? ''"
+          [style]="row.RowStyle ?? ''"
+          [style.height.px]="rowHeight()"
+          [class.ui-table__row--selected]="isRowSelected(row)"
+          [class.ui-table__row--clickable]="!!row.RowClick"
+          (click)="onRowClick($event, row, index)"
+          (contextmenu)="openMenu($event, index)"
+          (touchstart)="onTouchStart($event, index)"
+          (touchend)="onTouchEnd()"
+          (touchmove)="onTouchEnd()"
+        >
+          @for (cell of row.cells; track $index; let col = $index) {
+            <td
+              [class]="cell.ClassColumn ?? ''"
+              [style]="cell.cssStyleColumn ?? ''"
+              [class.ui-table__cell--check]="!!cell.CheckBox"
+              [class.ui-table__cell--actions]="cell.isActions"
+            >
+              @if (cell.isActions) {
+                <button
+                  type="button"
+                  class="ui-table__menu-btn"
+                  aria-label="Row actions"
+                  (click)="openMenuFromButton($event, index)"
+                >
+                  <svg viewBox="0 0 4 16" width="4" height="14" aria-hidden="true">
+                    <circle cx="2" cy="2" r="1.6" fill="currentColor" />
+                    <circle cx="2" cy="8" r="1.6" fill="currentColor" />
+                    <circle cx="2" cy="14" r="1.6" fill="currentColor" />
+                  </svg>
+                </button>
+              } @else if (cell.td_input; as field) {
+                @if (field.type === 'select') {
+                  <ui-select
+                    inputClass="ui-table__select"
+                    [items]="field.Items()"
+                    [optionLabel]="field.optionTextField"
+                    [optionValue]="field.optionValueField"
+                    [placeholder]="field.placeholder || ''"
+                    [allowClear]="!!field.allowClear"
+                    [disabled]="!!field.disabled"
+                    [loadOnScroll]="!!field.scroll_event"
+                    [total]="field.count ? field.count() : null"
+                    [loading]="field.loading ? field.loading() : false"
+                    [forceSearch]="!!field.force_search"
+                    [ngModel]="field.value()"
+                    (click)="$event.stopPropagation()"
+                    (search)="callCellInput(field.onTyped, $event, index)"
+                    (selected)="callCellInput(field.onSelect, $event, index)"
+                    (removed)="callCellInput(field.onClear, $event, index)"
+                  />
+                } @else {
+                  <input
+                    class="ui-table__input"
+                    [type]="field.type"
+                    [value]="field.value()"
+                    [disabled]="!!field.disabled"
+                    [placeholder]="field.placeholder || '-'"
+                    (click)="$event.stopPropagation()"
+                    (change)="callCellInput(field.onChange, $event, index)"
+                    (input)="callCellInput(field.onInput, $event, index)"
+                  />
+                }
+              } @else {
+                <div class="ui-table__content">
+                  @if (cell.CheckBox) {
+                    <input
+                      type="checkbox"
+                      [class]="'ui-table__check ' + (cell.CheckBoxClass ?? '')"
+                      [style]="cell.CheckBoxStyle ?? ''"
+                      [checked]="cell.Checked"
+                      (click)="onCheck($event, index, col)"
+                    />
+                  }
+                  @if (cell.value) {
+                    <span
+                      [class]="cell.cssClasseCel ?? ''"
+                      [style]="cell.cssStyle ?? ''"
+                      [innerHTML]="cell.value | uiSafeHtml"
+                      (click)="onCellClick($event, cell, index)"
+                    ></span>
+                  }
+                </div>
+              }
+            </td>
+          }
+        </tr>
+      }
+
+      @if (view().bottom) {
+        <tr class="ui-table__spacer" aria-hidden="true">
+          <td [attr.colspan]="columns().length" [style.height.px]="view().bottom"></td>
+        </tr>
+      }
+    </tbody>
+
+    @if (showFooter()) {
+      <tfoot>
+        <tr>
+          @for (column of columns(); track $index) {
+            <td [class.ui-table__total]="!!column.footer">{{ column.footer || '-' }}</td>
+          }
+        </tr>
+      </tfoot>
+    }
+  </table>
+
+  @if (loading()) {
+    <div class="ui-table__status" role="status">
+      <span class="ui-table__spinner" aria-hidden="true"></span>
+      {{ loadingText() | uiTranslate }}
+    </div>
+  } @else if (noData()) {
+    <div class="ui-table__status">{{ noDataText() | uiTranslate }}</div>
+  }
+
+  <!-- Infinite scroll: when this comes into view the next page loads. -->
+  <div #sentinel class="ui-table__sentinel" aria-hidden="true"></div>
+</div>
+
+<ui-table-menu [state]="menu()" (closed)="menu.set(null)" />
+
+<div class="ui-table__footer" [class]="footerVariant()">
+  <div class="ui-table__meta">
+    {{ resultLabel() | uiTranslate }}:
+    <strong>{{ tableRows().length }}</strong>
+    /
+    <strong>{{ pageState().count }}</strong>
+    @if (!noData()) {
+      @for (entry of summaryEntries(); track entry.key) {
+        | {{ entry.key | uiTranslate }}:
+        <strong>{{ entry.isNumber ? ($any(entry.value) | number) : entry.value }}</strong>
+      }
+    }
+  </div>
+  <div class="ui-table__tools">
+    <button
+      type="button"
+      class="ui-table__reload"
+      aria-label="Reload"
+      [disabled]="loading()"
+      (click)="reload()"
+    >
+      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+        <path
+          d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5v3h-3"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </button>
+    @if (pageSizes(); as sizes) {
+      <select
+        class="ui-table__page-size"
+        aria-label="Rows per page"
+        (change)="changePageSize($any($event.target).value)"
+      >
+        @for (size of sizes.items; track size.value) {
+          <option [value]="size.value" [selected]="size.value === pageSize()">{{ size.title | uiTranslate }}</option>
+        }
+      </select>
+    }
+  </div>
+</div>

@@ -1,0 +1,34 @@
+:host {
+  display: block;
+  background: var(--ui-surface, #fff);
+  border: 1px solid var(--ui-border, #e5e7eb);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.ui-card {
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--ui-border, #e5e7eb);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+
+  &__body {
+    padding: 1.25rem;
+  }
+}
+
+[cardFooter] {
+  display: block;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--ui-border, #e5e7eb);
+}

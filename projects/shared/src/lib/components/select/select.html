@@ -1,0 +1,166 @@
+<div
+  class="ui-select__trigger"
+  cdkOverlayOrigin
+  [class.ui-select__trigger--multiple]="multiple()"
+  (mousedown)="$event.target !== field && focusField($event)"
+>
+  @if (multiple()) {
+    @for (chip of chips(); track chip.value) {
+      <span class="ui-select__chip">
+        <span class="ui-select__chip-label">{{ chip.label }}</span>
+        @if (allowClear() && !isDisabled()) {
+          <button
+            type="button"
+            class="ui-select__chip-remove"
+            tabindex="-1"
+            [attr.aria-label]="'Remove ' + chip.label"
+            (mousedown)="removeChip(chip.value, $event)"
+          >
+            ×
+          </button>
+        }
+      </span>
+    }
+  } @else if (hasValue() && !text() && !autoComplete()) {
+    <span class="ui-select__value">{{ chips()[0].label }}</span>
+  }
+
+  <input
+    #field
+    type="text"
+    autocomplete="off"
+    role="combobox"
+    aria-autocomplete="list"
+    [class]="'ui-select__field ' + inputClass()"
+    [id]="id"
+    [value]="text()"
+    [disabled]="isDisabled()"
+    [placeholder]="hasValue() ? (open() && !multiple() ? chips()[0].label : '') : placeholder()"
+    [attr.aria-expanded]="open()"
+    [attr.aria-controls]="id + '-list'"
+    [attr.aria-activedescendant]="activeIndex() >= 0 ? id + '-opt-' + activeIndex() : null"
+    (focus)="openPanel()"
+    (blur)="onBlur()"
+    (input)="onInput($event)"
+    (keydown)="onKeydown($event)"
+  />
+
+  @if (allowClear() && hasValue() && !multiple() && !isDisabled() && !open()) {
+    <button
+      type="button"
+      class="ui-select__icon ui-select__clear"
+      tabindex="-1"
+      aria-label="Clear"
+      (mousedown)="clear($event)"
+    >
+      ×
+    </button>
+  } @else if (forceSearch() && open()) {
+    <button
+      type="button"
+      class="ui-select__icon"
+      tabindex="-1"
+      aria-label="Search"
+      (mousedown)="runForcedSearch($event)"
+    >
+      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+        <circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.8" />
+        <path d="m11 11 3.5 3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      </svg>
+    </button>
+  } @else {
+    <span class="ui-select__icon ui-select__arrow" aria-hidden="true"></span>
+  }
+</div>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="origin()"
+  [cdkConnectedOverlayOpen]="open()"
+  [cdkConnectedOverlayPositions]="positions"
+  [cdkConnectedOverlayMinWidth]="triggerWidth"
+  [cdkConnectedOverlayPanelClass]="['ui-select-panel', panelClass()]"
+  (detach)="closePanel()"
+>
+  <div
+    class="ui-select__panel"
+    role="listbox"
+    [id]="id + '-list'"
+    [attr.aria-multiselectable]="multiple()"
+    (mousedown)="$event.preventDefault()"
+  >
+    @if (virtualScroll()) {
+      <cdk-virtual-scroll-viewport
+        class="ui-select__list"
+        [itemSize]="itemSize()"
+        [style.height.px]="listHeight()"
+        (scroll)="onListScroll($event.target)"
+      >
+        <div
+          *cdkVirtualFor="let item of filtered(); let i = index; templateCacheSize: 0"
+          class="ui-select__option"
+          role="option"
+          [id]="id + '-opt-' + i"
+          [style.height.px]="itemSize()"
+          [class.ui-select__option--active]="i === activeIndex()"
+          [class.ui-select__option--selected]="isSelected(item)"
+          [class.ui-select__option--disabled]="isOptionDisabled(item)"
+          [attr.aria-selected]="isSelected(item)"
+          [attr.aria-disabled]="isOptionDisabled(item)"
+          (mouseenter)="activeIndex.set(i)"
+          (mousedown)="pick(item, $event)"
+        >
+          {{ labelOf(item) }}
+        </div>
+      </cdk-virtual-scroll-viewport>
+    } @else {
+      <div
+        #list
+        class="ui-select__list"
+        [style.max-height.px]="panelMaxHeight()"
+        (scroll)="onListScroll($event.target)"
+      >
+        @for (item of filtered(); track $index; let i = $index) {
+          <div
+            class="ui-select__option"
+            role="option"
+            [id]="id + '-opt-' + i"
+            [attr.data-index]="i"
+            [style.min-height.px]="itemSize()"
+            [class.ui-select__option--active]="i === activeIndex()"
+            [class.ui-select__option--selected]="isSelected(item)"
+            [class.ui-select__option--disabled]="isOptionDisabled(item)"
+            [attr.aria-selected]="isSelected(item)"
+            [attr.aria-disabled]="isOptionDisabled(item)"
+            (mouseenter)="activeIndex.set(i)"
+            (mousedown)="pick(item, $event)"
+          >
+            {{ labelOf(item) }}
+          </div>
+        }
+      </div>
+    }
+    <ng-container [ngTemplateOutlet]="footer" />
+  </div>
+</ng-template>
+
+<ng-template #footer>
+  @if (pending()) {
+    <div class="ui-select__status" [style.height.px]="itemSize()">
+      <span class="ui-select__spinner" aria-hidden="true"></span>
+      {{ loadingText() | uiTranslate }}
+    </div>
+  } @else if (forceSearch()) {
+    <div
+      class="ui-select__option ui-select__status"
+      [style.height.px]="itemSize()"
+      (mousedown)="runForcedSearch($event)"
+    >
+      {{ searchText() | uiTranslate }}
+    </div>
+  } @else if (filtered().length === 0 && noResultsText()) {
+    <div class="ui-select__status" [style.height.px]="itemSize()">
+      {{ noResultsText() | uiTranslate }}
+    </div>
+  }
+</ng-template>

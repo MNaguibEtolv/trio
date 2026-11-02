@@ -1,0 +1,212 @@
+:host {
+  display: block;
+  position: relative;
+  min-width: 0;
+}
+
+.ui-select__trigger {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 4px;
+  min-height: var(--ui-control-height, 34px);
+  padding-block: 2px;
+  padding-inline: 8px 30px;
+  border: 1px solid var(--ui-control-border, #cbd5e1);
+  border-radius: var(--ui-control-radius, 0.4rem);
+  background: var(--ui-control-bg, #f8fafc);
+  color: var(--ui-control-text, #0f172a);
+  cursor: text;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+
+  &:hover {
+    border-color: var(--ui-control-border-hover, #94a3b8);
+  }
+
+  &--multiple {
+    flex-wrap: wrap;
+  }
+}
+
+:host(.ui-select--open) .ui-select__trigger,
+.ui-select__trigger:focus-within {
+  border-color: var(--ui-primary, #2563eb);
+  box-shadow: 0 0 0 3px var(--ui-focus-ring, rgba(37, 99, 235, 0.22));
+}
+
+:host(.ui-select--disabled) .ui-select__trigger {
+  background: var(--ui-control-disabled-bg, #f1f5f9);
+  color: var(--ui-control-disabled-text, #475569);
+  cursor: not-allowed;
+}
+
+.ui-select__field {
+  flex: 1 1 40px;
+  min-width: 40px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--ui-control-font-size, 0.875rem);
+  padding: 0;
+
+  &::placeholder {
+    color: var(--ui-control-placeholder, #64748b);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+/* Single-select value sits under the empty field until the user types. */
+.ui-select__value {
+  position: absolute;
+  inset-inline: 8px 30px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: var(--ui-control-font-size, 0.875rem);
+  pointer-events: none;
+}
+
+.ui-select__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--ui-primary-soft, rgba(37, 99, 235, 0.12));
+  color: var(--ui-text, #0b1324);
+  font-size: 0.8125rem;
+}
+
+.ui-select__chip-label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ui-select__chip-remove,
+.ui-select__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ui-text-muted, #4b5a75);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--ui-danger, #dc2626);
+  }
+}
+
+.ui-select__icon {
+  position: absolute;
+  inset-inline-end: 8px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+}
+
+.ui-select__arrow {
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    margin-top: -4px;
+    border-inline-end: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.15s ease;
+  }
+}
+
+:host(.ui-select--open) .ui-select__arrow::after {
+  margin-top: 3px;
+  transform: rotate(-135deg);
+}
+
+/* ── Panel (rendered in the CDK overlay, outside the host) ── */
+
+.ui-select__panel {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--ui-border, rgba(20, 34, 67, 0.12));
+  border-radius: var(--ui-control-radius, 0.4rem);
+  background: var(--ui-surface, #fff);
+  box-shadow: var(--ui-shadow-soft, 0 4px 18px rgba(17, 30, 62, 0.08));
+  color: var(--ui-text, #0b1324);
+  font-size: var(--ui-control-font-size, 0.875rem);
+}
+
+.ui-select__list {
+  overflow-y: auto;
+}
+
+.ui-select__option {
+  display: flex;
+  align-items: center;
+  padding-inline: 10px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+
+  &--active {
+    background: var(--ui-table-row-hover-bg, #e4edff);
+  }
+
+  &--selected {
+    font-weight: 600;
+    color: var(--ui-primary, #2563eb);
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.ui-select__status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-top: 1px solid var(--ui-border, rgba(20, 34, 67, 0.12));
+  color: var(--ui-text-muted, #4b5a75);
+}
+
+.ui-select__list:empty + .ui-select__status,
+.ui-select__panel > .ui-select__status:first-child {
+  border-top: 0;
+}
+
+.ui-select__spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: ui-select-spin 0.7s linear infinite;
+}
+
+@keyframes ui-select-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

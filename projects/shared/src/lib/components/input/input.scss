@@ -1,0 +1,43 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ui-input {
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ui-text, #111827);
+  }
+
+  &__field {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--ui-border, #d1d5db);
+    border-radius: 0.5rem;
+    font: inherit;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ui-primary, #2563eb);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+
+    &:disabled {
+      background: #f3f4f6;
+      cursor: not-allowed;
+    }
+
+    &--invalid {
+      border-color: var(--ui-danger, #dc2626);
+    }
+  }
+
+  &__hint {
+    color: #6b7280;
+  }
+
+  &__error {
+    color: var(--ui-danger, #dc2626);
+  }
+}
