@@ -10,30 +10,31 @@ import {
 } from '@angular/core';
 import { UiSafeHtmlPipe } from '../../core/safe-html';
 import { UiTranslatePipe } from '../../core/translate';
-import { ContextMenuAction, TableData, contextMenu, contextMenuItem } from './table.types';
-
-export interface TableMenuState {
-  menu: contextMenuItem;
-  row: TableData;
-  index: number;
-  x: number;
-  y: number;
-}
+import { Icon } from '../../icons/icon';
+import { ContextMenuAction, ContextMenuState, contextMenu } from './context-menu.types';
 
 interface MenuEntry {
   label: string;
   item: contextMenu;
 }
 
-/** Row menu for `ui-table`: opens at a point, flips near the screen edges. */
+/**
+ * A menu that opens at a point on screen — right-click menus, ⋮ buttons.
+ * Flips to stay on screen near the edges, and closes on an outside click,
+ * Escape, scroll or resize.
+ *
+ *   <div (contextmenu)="$event.preventDefault();
+ *        menu.set({ menu: items, x: $event.clientX, y: $event.clientY, row })">
+ *   <ui-context-menu [state]="menu()" (closed)="menu.set(null)" />
+ */
 @Component({
-  selector: 'ui-table-menu',
-  imports: [UiSafeHtmlPipe, UiTranslatePipe],
+  selector: 'ui-context-menu',
+  imports: [Icon, UiSafeHtmlPipe, UiTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (state(); as s) {
       <div
-        class="ui-table-menu"
+        class="ui-context-menu"
         role="menu"
         [style.left.px]="position().left"
         [style.top.px]="position().top"
@@ -45,15 +46,22 @@ interface MenuEntry {
           <button
             type="button"
             role="menuitem"
-            class="ui-table-menu__item"
+            class="ui-context-menu__item"
             [class]="entry.item.ClassIcon ?? ''"
             [style]="entry.item.StyleDiv ?? ''"
             (click)="run(entry.item, s)"
           >
             @if (entry.item.DiffIcon) {
-              <span class="ui-table-menu__icon" [innerHTML]="entry.item.DiffIcon | uiSafeHtml"></span>
+              <span class="ui-context-menu__icon" [innerHTML]="entry.item.DiffIcon | uiSafeHtml"></span>
+            } @else if (entry.item.SvgIcon) {
+              <ui-icon
+                class="ui-context-menu__icon"
+                size="16"
+                [name]="entry.item.SvgIcon"
+                [style]="entry.item.IconStyle ?? ''"
+              />
             } @else if (entry.item.Icon) {
-              <i class="ui-table-menu__icon" [class]="entry.item.Icon" [style]="entry.item.IconStyle ?? ''"></i>
+              <i class="ui-context-menu__icon" [class]="entry.item.Icon" [style]="entry.item.IconStyle ?? ''"></i>
             }
             <span [class]="entry.item.ClassCSS ?? ''" [style]="entry.item.SytleCSS ?? ''">
               {{ entry.label | uiTranslate }}
@@ -64,7 +72,7 @@ interface MenuEntry {
     }
   `,
   styles: `
-    .ui-table-menu {
+    .ui-context-menu {
       position: fixed;
       z-index: var(--ui-z-overlay, 1300);
       min-width: 180px;
@@ -76,7 +84,7 @@ interface MenuEntry {
       background: var(--ui-surface, #fff);
       box-shadow: var(--ui-shadow, 0 12px 34px rgba(17, 30, 62, 0.11));
     }
-    .ui-table-menu__item {
+    .ui-context-menu__item {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -91,12 +99,12 @@ interface MenuEntry {
       text-align: start;
       cursor: pointer;
     }
-    .ui-table-menu__item:hover,
-    .ui-table-menu__item:focus-visible {
+    .ui-context-menu__item:hover,
+    .ui-context-menu__item:focus-visible {
       background: var(--ui-table-row-hover-bg, #e4edff);
       outline: none;
     }
-    .ui-table-menu__icon {
+    .ui-context-menu__icon {
       display: inline-flex;
       width: 16px;
       justify-content: center;
@@ -104,10 +112,10 @@ interface MenuEntry {
     }
   `,
 })
-export class TableMenu {
+export class ContextMenu {
   private readonly document = inject(DOCUMENT);
 
-  readonly state = input<TableMenuState | null>(null);
+  readonly state = input<ContextMenuState | null>(null);
   readonly closed = output<void>();
 
   /** SubMenu groups are flattened into the one list, as in the portal. */
@@ -168,13 +176,13 @@ export class TableMenu {
       const view = this.document.defaultView;
       const close = () => this.closed.emit();
       const onPointer = (event: Event) => {
-        if (!(event.target as Element | null)?.closest?.('.ui-table-menu')) {
+        if (!(event.target as Element | null)?.closest?.('.ui-context-menu')) {
           close();
         }
       };
       const onKey = (event: KeyboardEvent) => event.key === 'Escape' && close();
       const onScroll = (event: Event) => {
-        if (!(event.target as Element | null)?.closest?.('.ui-table-menu')) {
+        if (!(event.target as Element | null)?.closest?.('.ui-context-menu')) {
           close();
         }
       };
@@ -197,8 +205,8 @@ export class TableMenu {
     });
   }
 
-  protected run(item: contextMenu, state: TableMenuState): void {
-    item.Action?.(state.row, state.index);
+  protected run(item: contextMenu, state: ContextMenuState): void {
+    item.Action?.(state.row, state.index ?? -1);
     this.closed.emit();
   }
 }

@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { contextMenuItem } from '../context-menu/context-menu.types';
 import { Table } from './table';
 import {
   ModifyTableDeclaration,
@@ -10,7 +11,6 @@ import {
   TableLoadEvent,
   TableSelectEvent,
   action_type,
-  contextMenuItem,
   rows,
 } from './table.types';
 
@@ -175,13 +175,13 @@ describe('Table', () => {
     bodyRows()[1].querySelector<HTMLButtonElement>('.ui-table__menu-btn')!.click();
     await fixture.whenStable();
 
-    const items = el().querySelectorAll<HTMLButtonElement>('.ui-table-menu__item');
+    const items = el().querySelectorAll<HTMLButtonElement>('.ui-context-menu__item');
     expect([...items].map((i) => i.textContent?.trim())).toEqual(['Edit', 'Delete']);
     items[0].click();
     await fixture.whenStable();
 
     expect(action).toHaveBeenCalledWith(PEOPLE[1], 1);
-    expect(el().querySelector('.ui-table-menu')).toBeNull();
+    expect(el().querySelector('.ui-context-menu')).toBeNull();
   });
 
   it('renders a select cell showing its current value', async () => {

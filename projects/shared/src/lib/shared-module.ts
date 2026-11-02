@@ -2,13 +2,15 @@ import { NgModule } from '@angular/core';
 import { Badge } from './components/badge/badge';
 import { Button } from './components/button/button';
 import { Card } from './components/card/card';
+import { ContextMenu } from './components/context-menu/context-menu';
 import { Input } from './components/input/input';
+import { Icon } from './icons/icon';
 import { Select } from './components/select/select';
 import { Spinner } from './components/spinner/spinner';
 import { Table } from './components/table/table';
 
 /** All shared UI components, for use in a standalone component's `imports` array. */
-export const SHARED_UI = [Badge, Button, Card, Input, Select, Spinner, Table] as const;
+export const SHARED_UI = [Badge, Button, Card, ContextMenu, Icon, Input, Select, Spinner, Table] as const;
 
 /** NgModule wrapper for consumers that prefer importing a single module. */
 @NgModule({

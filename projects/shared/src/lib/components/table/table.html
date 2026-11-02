@@ -49,9 +49,11 @@
                       {{ (group ? group.Data : column.headerName) | uiTranslate }}
                     }
                     @if (isSortedBy(column, headerRow)) {
-                      <span class="ui-table__sort" aria-hidden="true">
-                        {{ sort()!.type === 'asc' ? '▲' : '▼' }}
-                      </span>
+                      <ui-icon
+                        class="ui-table__sort"
+                        size="12"
+                        [name]="sort()!.type === 'asc' ? 'arrow-up' : 'arrow-down'"
+                      />
                     }
                   </span>
                 </div>
@@ -102,11 +104,7 @@
                   aria-label="Row actions"
                   (click)="openMenuFromButton($event, index)"
                 >
-                  <svg viewBox="0 0 4 16" width="4" height="14" aria-hidden="true">
-                    <circle cx="2" cy="2" r="1.6" fill="currentColor" />
-                    <circle cx="2" cy="8" r="1.6" fill="currentColor" />
-                    <circle cx="2" cy="14" r="1.6" fill="currentColor" />
-                  </svg>
+                  <ui-icon name="more-vertical" size="16" />
                 </button>
               } @else if (cell.td_input; as field) {
                 @if (field.type === 'select') {
@@ -197,7 +195,7 @@
   <div #sentinel class="ui-table__sentinel" aria-hidden="true"></div>
 </div>
 
-<ui-table-menu [state]="menu()" (closed)="menu.set(null)" />
+<ui-context-menu [state]="menu()" (closed)="menu.set(null)" />
 
 <div class="ui-table__footer" [class]="footerVariant()">
   <div class="ui-table__meta">
@@ -220,16 +218,7 @@
       [disabled]="loading()"
       (click)="reload()"
     >
-      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
-        <path
-          d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5v3h-3"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.6"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </svg>
+      <ui-icon name="reload" size="15" />
     </button>
     @if (pageSizes(); as sizes) {
       <select

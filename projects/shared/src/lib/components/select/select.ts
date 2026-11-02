@@ -24,6 +24,7 @@ import { outputFromObservable } from '@angular/core/rxjs-interop';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { UI_TRANSLATE, UiTranslatePipe } from '../../core/translate';
+import { Icon } from '../../icons/icon';
 
 export type SelectValue = string | number | boolean | null;
 
@@ -53,6 +54,7 @@ let nextId = 0;
     CdkVirtualScrollViewport,
     CdkFixedSizeVirtualScroll,
     CdkVirtualForOf,
+    Icon,
     NgTemplateOutlet,
     UiTranslatePipe,
   ],

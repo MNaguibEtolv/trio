@@ -1,4 +1,5 @@
 import { WritableSignal } from '@angular/core';
+import { contextMenuItem } from '../context-menu/context-menu.types';
 
 /**
  * Column and cell configuration for `ui-table`.
@@ -99,26 +100,6 @@ export interface TableColumn {
 
 /** The portal's name for a column list. */
 export type HeaderEtolv = TableColumn[];
-
-export interface contextMenu {
-  ClassCSS?: string;
-  SytleCSS?: string;
-  /** Raw HTML icon. */
-  DiffIcon?: string;
-  IconStyle?: string;
-  /** Icon class(es) for an `<i>`. */
-  Icon?: string;
-  ClassIcon?: string;
-  /** Children are shown flattened into the same menu. */
-  SubMenu?: Record<string, contextMenu | ContextMenuAction>;
-  Action?: ContextMenuAction;
-  StyleDiv?: string;
-}
-
-export type ContextMenuAction = (row: any, rowIndex: number) => void;
-
-/** Label (or translation key) → item. */
-export type contextMenuItem = Record<string, contextMenu | ContextMenuAction | string>;
 
 export type contextSelectorFunc = (row: TableData, rowIndex: number) => contextMenuItem;
 

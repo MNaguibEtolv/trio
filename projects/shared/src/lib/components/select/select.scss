@@ -117,27 +117,15 @@
   width: 16px;
   height: 16px;
   transform: translateY(-50%);
-  font-size: 1.1rem;
 }
 
 .ui-select__arrow {
   pointer-events: none;
-
-  &::after {
-    content: '';
-    width: 7px;
-    height: 7px;
-    margin-top: -4px;
-    border-inline-end: 1.5px solid currentColor;
-    border-bottom: 1.5px solid currentColor;
-    transform: rotate(45deg);
-    transition: transform 0.15s ease;
-  }
+  transition: transform 0.15s ease;
 }
 
-:host(.ui-select--open) .ui-select__arrow::after {
-  margin-top: 3px;
-  transform: rotate(-135deg);
+:host(.ui-select--open) .ui-select__arrow {
+  transform: translateY(-50%) rotate(180deg);
 }
 
 /* ── Panel (rendered in the CDK overlay, outside the host) ── */

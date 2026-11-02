@@ -22,8 +22,10 @@ import { FormsModule } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { UiSafeHtmlPipe } from '../../core/safe-html';
 import { UiTranslatePipe } from '../../core/translate';
+import { Icon } from '../../icons/icon';
 import { Select } from '../select/select';
-import { TableMenu, TableMenuState } from './table-menu';
+import { ContextMenu } from '../context-menu/context-menu';
+import { ContextMenuState, contextMenuItem } from '../context-menu/context-menu.types';
 import {
   ModifyTableDeclaration,
   PageEtolv,
@@ -38,7 +40,6 @@ import {
   TableRow,
   TableSelectEvent,
   action_type,
-  contextMenuItem,
   contextSelectorFunc,
   returnCellRender,
   rows,
@@ -60,7 +61,7 @@ const VIRTUAL_BUFFER = 6;
  */
 @Component({
   selector: 'ui-table',
-  imports: [DecimalPipe, FormsModule, Select, TableMenu, UiSafeHtmlPipe, UiTranslatePipe],
+  imports: [ContextMenu, DecimalPipe, FormsModule, Icon, Select, UiSafeHtmlPipe, UiTranslatePipe],
   templateUrl: './table.html',
   styleUrl: './table.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -115,7 +116,7 @@ export class Table implements OnInit {
   protected readonly lastRow = signal(false);
   protected readonly noData = signal(false);
   protected readonly tableRows = signal<TableRow[]>([]);
-  protected readonly menu = signal<TableMenuState | null>(null);
+  protected readonly menu = signal<ContextMenuState | null>(null);
   protected readonly pageState = linkedSignal(() => ({ ...this.page() }));
   protected readonly sort = linkedSignal(() => this.defaultSort());
   protected readonly pageSize = linkedSignal(() => this.pageSizes()?.default_value ?? null);
